@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Parser</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        h1 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Resume Parser</h1>
+    <p>This is Resume Parser by Prashant.</p>
+
+    <!-- Display the upload form or result based on model attributes -->
+    <div th:if="${name == null}">
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <label for="fileUpload">Upload your file:</label>
+            <input type="file" id="fileUpload" name="fileUpload" accept=".pdf, .doc, .docx" />
+            <br><br>
+            <input type="submit" value="Upload File" />
+        </form>
+    </div>
+
+    <div th:if="${name != null}">
+        <p><strong>Name:</strong> <span th:text="${name}">Name</span></p>
+        <p><strong>Email:</strong> <span th:text="${email}">Email</span></p>
+        <a href="/" th:href="@{/}">Back to Upload</a>
+    </div>
+</body>
+</html>
