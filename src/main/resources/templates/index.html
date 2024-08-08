@@ -7,32 +7,104 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 80%;
+            max-width: 800px;
         }
         h1 {
             color: #333;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1rem;
+            color: #666;
+            margin: 10px 0;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+        input[type="file"] {
+            margin-bottom: 20px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        .result p {
+            background-color: #e8f5e9;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #c8e6c9;
+        }
+        .result span {
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h1>Resume Parser</h1>
-    <p>This is Resume Parser by Prashant.</p>
+    <div class="container">
+        <h1>Resume Parser By Prashant</h1>
+        <p>This is Resume Parser.</p>
 
-    <!-- Display the upload form or result based on model attributes -->
-    <div th:if="${name == null}">
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <label for="fileUpload">Upload your file:</label>
-            <input type="file" id="fileUpload" name="fileUpload" accept=".pdf, .doc, .docx" />
-            <br><br>
-            <input type="submit" value="Upload File" />
-        </form>
-    </div>
+        <!-- Display the upload form or result based on model attributes -->
+        <div th:if="${name == null}">
+            <form action="/upload" method="post" enctype="multipart/form-data">
+                <label for="fileUpload">Upload your file:</label>
+                <input type="file" id="fileUpload" name="fileUpload" accept=".pdf, .doc, .docx" />
+                <br>
+                <input type="submit" value="Upload File" />
+            </form>
+        </div>
 
-    <div th:if="${name != null}">
-        <p><strong>Name:</strong> <span th:text="${name}">Name</span></p>
-        <p><strong>Email:</strong> <span th:text="${email}">Email</span></p>
-        <a href="/" th:href="@{/}">Back to Upload</a>
+        <div th:if="${name != null}" class="result">
+            <p><strong>Name:</strong> <span th:text="${name}">Name</span></p>
+            <p><strong>Email:</strong> <span th:text="${email}">Email</span></p>
+            <p><strong>Skills:</strong> <span th:text="${skills}">Skills</span></p>
+            <p><strong>Mobile Number:</strong> <span th:text="${mobileNumber}">Mobile Number</span></p>
+            <p><strong>Address:</strong> <span th:text="${address}">Address</span></p>
+            <p><strong>Date of Birth:</strong> <span th:text="${dateOfBirth}">Date of Birth</span></p>
+            <p><strong>Marital Status:</strong> <span th:text="${maritalStatus}">Marital Status</span></p>
+            <p><strong>Languages Known:</strong> <span th:text="${languages}">Languages</span></p>
+            <p><strong>Nationality:</strong> <span th:text="${nationality}">Nationality</span></p>
+            <p><strong>Gender:</strong> <span th:text="${gender}">Gender</span></p>
+        </div>
+        
+        <!-- Show upload button only after information is fetched -->
+        <div th:if="${name != null}">
+            <form action="/upload" method="post" enctype="multipart/form-data">
+                <label for="fileUpload">Upload another file:</label>
+                <input type="file" id="fileUpload" name="fileUpload" accept=".pdf, .doc, .docx" />
+                <br>
+                <input type="submit" value="Upload Another File" />
+            </form>
+        </div>
     </div>
 </body>
 </html>
