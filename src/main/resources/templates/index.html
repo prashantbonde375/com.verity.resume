@@ -66,20 +66,25 @@
         .result span {
             font-weight: bold;
         }
+        .error {
+            color: red;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Resume Parser By Prashant</h1>
-        <p>This is Resume Parser.</p>
+
 
         <!-- Display the upload form or result based on model attributes -->
         <div th:if="${name == null}">
-            <form action="/upload" method="post" enctype="multipart/form-data">
+            <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
                 <label for="fileUpload">Upload your file:</label>
                 <input type="file" id="fileUpload" name="fileUpload" accept=".pdf, .doc, .docx" />
                 <br>
-                <input type="submit" value="Upload File" />
+                <input type="submit" id="uploadBtn" value="Upload File" />
+                <p id="errorMsg" class="error"></p>
             </form>
         </div>
 
@@ -98,13 +103,28 @@
         
         <!-- Show upload button only after information is fetched -->
         <div th:if="${name != null}">
-            <form action="/upload" method="post" enctype="multipart/form-data">
+            <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
                 <label for="fileUpload">Upload another file:</label>
                 <input type="file" id="fileUpload" name="fileUpload" accept=".pdf, .doc, .docx" />
                 <br>
-                <input type="submit" value="Upload Another File" />
+                <input type="submit" id="uploadBtn" value="Upload Another File" />
+                <p id="errorMsg" class="error"></p>
             </form>
         </div>
     </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            var fileInput = document.getElementById('fileUpload');
+            var errorMsg = document.getElementById('errorMsg');
+
+            if (!fileInput.files.length) {
+                errorMsg.textContent = 'Please select a file to upload.';
+                event.preventDefault(); // Prevent form submission
+            } else {
+                errorMsg.textContent = ''; // Clear any previous error message
+            }
+        });
+    </script>
 </body>
 </html>
