@@ -77,9 +77,53 @@ public class ResumeController {
 
     private List<String> extractSkills(String text) {
         List<String> skillKeywords = List.of(
-                "Java", "Python", "C++", "Spring", "Hibernate", "SQL",
-                "JavaScript", "HTML", "CSS", "Angular", "React", "Node.js",
-                "Docker", "Kubernetes", "Spring Boot");
+                // Programming Languages
+                "Java", "Python", "C++", "C#", "JavaScript", "TypeScript", "Ruby", "Go", "Swift", "Kotlin",
+
+                // Web Technologies
+                "HTML", "CSS", "JavaScript", "TypeScript", "Angular", "React", "Vue.js", "Node.js", "Express.js",
+                "Django", "Flask",
+
+                // Frameworks and Libraries
+                "Spring", "Hibernate", "Spring Boot", "JPA", "Struts", "Ruby on Rails", "ASP.NET", "Bootstrap",
+                "Foundation",
+
+                // Databases
+                "SQL", "MySQL", "PostgreSQL", "Oracle", "MongoDB", "Redis", "SQLite", "NoSQL", "Cassandra", "MariaDB",
+
+                // Cloud Platforms
+                "AWS", "Azure", "Google Cloud Platform", "Heroku", "IBM Cloud", "Alibaba Cloud",
+
+                // DevOps and CI/CD
+                "Docker", "Kubernetes", "Jenkins", "GitLab CI", "Travis CI", "Ansible", "Terraform", "Puppet", "Chef",
+
+                // Version Control
+                "Git", "GitHub", "GitLab", "Bitbucket", "Subversion (SVN)", "Mercurial",
+
+                // Operating Systems
+                "Linux", "Windows", "macOS", "Ubuntu", "Red Hat", "CentOS", "Debian",
+
+                // Networking
+                "TCP/IP", "HTTP", "HTTPS", "FTP", "DNS", "VPN", "Proxy", "Load Balancing", "Firewalls",
+
+                // Security
+                "OAuth", "JWT", "SSL/TLS", "Encryption", "Penetration Testing", "Vulnerability Assessment", "IAM",
+
+                // Testing
+                "JUnit", "Mockito", "Selenium", "JUnit5", "TestNG", "Cucumber", "Jest", "Mocha", "Chai",
+
+                // Development Tools
+                "IDE", "Eclipse", "IntelliJ IDEA", "Visual Studio", "Visual Studio Code", "NetBeans", "Xcode",
+
+                // Project Management
+                "Agile", "Scrum", "Kanban", "JIRA", "Confluence", "Trello", "Asana",
+
+                // Data Science and Machine Learning
+                "TensorFlow", "Keras", "PyTorch", "Scikit-learn", "Pandas", "NumPy", "Matplotlib", "Seaborn",
+
+                // Big Data
+                "Hadoop", "Spark", "Kafka", "Elasticsearch", "Hive", "Pig");
+        
 
         return skillKeywords.stream()
                 .filter(skill -> text.toLowerCase().contains(skill.toLowerCase()))
