@@ -23,47 +23,47 @@ public class ResumeController {
     }
 
     @PostMapping("/upload")
-public String handleFileUpload(@RequestParam("fileUpload") MultipartFile file, Model model) {
-    try {
-        // Parse the resume file
-        String parsedText = parseResume(file);
+    public String handleFileUpload(@RequestParam("fileUpload") MultipartFile file, Model model) {
+        try {
+            // Parse the resume file
+            String parsedText = parseResume(file);
 
-        // Analyze the parsed text to extract required data
-        String name = extractName(parsedText);
-        String email = extractEmail(parsedText);
-        List<String> skills = extractSkills(parsedText);
-        String mobileNumber = extractMobileNumber(parsedText);
-        String address = extractAddress(parsedText);
-        String dateOfBirth = extractDateOfBirth(parsedText);
-        String maritalStatus = extractMaritalStatus(parsedText);
-        List<String> languages = extractLanguages(parsedText);
-        String nationality = extractNationality(parsedText);
-        String gender = extractGender(parsedText);
+            // Analyze the parsed text to extract required data
+            String name = extractName(parsedText);
+            String email = extractEmail(parsedText);
+            List<String> skills = extractSkills(parsedText);
+            String mobileNumber = extractMobileNumber(parsedText);
+            String address = extractAddress(parsedText);
+            String dateOfBirth = extractDateOfBirth(parsedText);
+            String maritalStatus = extractMaritalStatus(parsedText);
+            List<String> languages = extractLanguages(parsedText);
+            String nationality = extractNationality(parsedText);
+            String gender = extractGender(parsedText);
 
-        System.out.println(name + " , " + email + " , " + skills + " , " + mobileNumber + " , " + address + " , " + dateOfBirth + " , " + maritalStatus + " , " + languages + " , " + nationality + " , " + gender);
-        
-        // Add extracted data to the model
-        model.addAttribute("name", name);
-        model.addAttribute("email", email);
-        model.addAttribute("skills", skills);
-        model.addAttribute("mobileNumber", mobileNumber);
-        model.addAttribute("address", address);
-        model.addAttribute("dateOfBirth", dateOfBirth);
-        model.addAttribute("maritalStatus", maritalStatus);
-        model.addAttribute("languages", languages);
-        model.addAttribute("nationality", nationality);
-        model.addAttribute("gender", gender);
+            System.out.println(name + " , " + email + " , " + skills + " , " + mobileNumber + " , " + address + " , "
+                    + dateOfBirth + " , " + maritalStatus + " , " + languages + " , " + nationality + " , " + gender);
 
-        // Return the same view with results
-        return "index";
+            // Add extracted data to the model
+            model.addAttribute("name", name);
+            model.addAttribute("email", email);
+            model.addAttribute("skills", skills);
+            model.addAttribute("mobileNumber", mobileNumber);
+            model.addAttribute("address", address);
+            model.addAttribute("dateOfBirth", dateOfBirth);
+            model.addAttribute("maritalStatus", maritalStatus);
+            model.addAttribute("languages", languages);
+            model.addAttribute("nationality", nationality);
+            model.addAttribute("gender", gender);
 
-    } catch (Exception e) {
-        e.printStackTrace();
-        model.addAttribute("error", "An error occurred while processing the file.");
-        return "index";
+            // Return the same view with results
+            return "index";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "An error occurred while processing the file.");
+            return "index";
+        }
     }
-}
-
 
     private String parseResume(MultipartFile file) throws Exception {
         Tika tika = new Tika();
@@ -182,11 +182,11 @@ public String handleFileUpload(@RequestParam("fileUpload") MultipartFile file, M
         String genderRegex = "\\b(Male|Female|Non-binary|Other|Genderqueer|Genderfluid|Agender)\\b";
         Pattern pattern = Pattern.compile(genderRegex, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(text);
-    
+
         if (matcher.find()) {
             return matcher.group().trim();
         }
         return "Gender not found";
     }
-    
+
 }
