@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
 import org.apache.tika.Tika;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,16 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class ResumeController {
 
+    private static final String NAME_REGEX = "\\b([A-Z][a-zA-Z]*[.']?\\s?)+([A-Z][a-zA-Z]*[-' ]?)+\\b";
+    private static final String EMAIL_REGEX = "([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6})";
+    private static final String MOBILE_REGEX = "\\b(\\+?\\d{1,4}[\\s-]?\\(?\\d{1,4}\\)?[\\s-]?\\d{1,4}[\\s-]?\\d{1,9})\\b";
+    private static final String ADDRESS_REGEX = "\\b\\d{1,5} [A-Za-z0-9 ]+(?: Apt \\w+)?(?:, [A-Za-z ]+)?(?:, [A-Z]{2} \\d{5})?(?:, [A-Za-z ]+)?\\b";
+    private static final String DOB_REGEX = "\\b(?:\\d{1,2}[/-]\\d{1,2}[/-]\\d{2,4}|\\d{2,4}[/-]\\d{1,2}[/-]\\d{1,2}|\\d{4}[./-]\\d{2}[./-]\\d{2}|\\d{1,2} [A-Za-z]+ \\d{4})\\b";
+    private static final String MARITAL_STATUS_REGEX = "\\b(Single|Married|Divorced|Widowed|Separated)\\b";
+    private static final String LANGUAGES_REGEX = "\\b(English|Spanish|French|German|Chinese|Japanese|Russian|Hindi|Arabic|Portuguese|Italian|Korean|Dutch|Turkish|Swedish|Norwegian|Danish|Finnish|Polish|Czech|Hungarian|Greek|Hebrew|Thai|Vietnamese)\\b";
+    private static final String NATIONALITY_REGEX = "\\b(American|British|Canadian|Australian|Indian|Chinese|Japanese|German|French|Italian|Spanish|Russian|Brazilian|Mexican|South African|Nigerian|Egyptian|Italian|Irish|Scottish|Welsh|Dutch|Swedish|Norwegian|Danish|Finnish|Polish|Czech|Hungarian|Greek|Turkish|Saudi|Iranian|Israeli)\\b";
+    private static final String GENDER_REGEX = "\\b(Male|Female|Non-binary|Other|Genderqueer|Genderfluid|Agender)\\b";
+
     @RequestMapping("/")
     public String index(Model model) {
         return "index";
@@ -25,37 +36,19 @@ public class ResumeController {
     @PostMapping("/upload")
     public String handleFileUpload(@RequestParam("fileUpload") MultipartFile file, Model model) {
         try {
-            // Parse the resume file
             String parsedText = parseResume(file);
 
-            // Analyze the parsed text to extract required data
-            String name = extractName(parsedText);
-            String email = extractEmail(parsedText);
-            List<String> skills = extractSkills(parsedText);
-            String mobileNumber = extractMobileNumber(parsedText);
-            String address = extractAddress(parsedText);
-            String dateOfBirth = extractDateOfBirth(parsedText);
-            String maritalStatus = extractMaritalStatus(parsedText);
-            List<String> languages = extractLanguages(parsedText);
-            String nationality = extractNationality(parsedText);
-            String gender = extractGender(parsedText);
+            model.addAttribute("name", extractData(parsedText, NAME_REGEX, "Name not found"));
+            model.addAttribute("email", extractData(parsedText, EMAIL_REGEX, "Email not found"));
+            model.addAttribute("skills", extractSkills(parsedText));
+            model.addAttribute("mobileNumber", extractData(parsedText, MOBILE_REGEX, "Mobile number not found"));
+            model.addAttribute("address", extractData(parsedText, ADDRESS_REGEX, "Address not found"));
+            model.addAttribute("dateOfBirth", extractData(parsedText, DOB_REGEX, "Date of Birth not found"));
+            model.addAttribute("maritalStatus", extractData(parsedText, MARITAL_STATUS_REGEX, "Marital status not found"));
+            model.addAttribute("languages", extractLanguages(parsedText));
+            model.addAttribute("nationality", extractData(parsedText, NATIONALITY_REGEX, "Nationality not found"));
+            model.addAttribute("gender", extractData(parsedText, GENDER_REGEX, "Gender not found"));
 
-            System.out.println(name + " , " + email + " , " + skills + " , " + mobileNumber + " , " + address + " , "
-                    + dateOfBirth + " , " + maritalStatus + " , " + languages + " , " + nationality + " , " + gender);
-
-            // Add extracted data to the model
-            model.addAttribute("name", name);
-            model.addAttribute("email", email);
-            model.addAttribute("skills", skills);
-            model.addAttribute("mobileNumber", mobileNumber);
-            model.addAttribute("address", address);
-            model.addAttribute("dateOfBirth", dateOfBirth);
-            model.addAttribute("maritalStatus", maritalStatus);
-            model.addAttribute("languages", languages);
-            model.addAttribute("nationality", nationality);
-            model.addAttribute("gender", gender);
-
-            // Return the same view with results
             return "index";
 
         } catch (Exception e) {
@@ -72,121 +65,39 @@ public class ResumeController {
         }
     }
 
-    private String extractName(String text) {
-        String nameRegex = "\\b[A-Z][a-z]+(?: [A-Z][a-z]+)*([-' ][A-Z][a-z]+)*\\b";
-        Pattern pattern = Pattern.compile(nameRegex);
+    private String extractData(String text, String regex, String defaultValue) {
+        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(text);
 
         if (matcher.find()) {
             return matcher.group().trim();
         }
-        return "Name not found";
-    }
-
-    private String extractEmail(String text) {
-        String emailRegex = "([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6})";
-        Pattern pattern = Pattern.compile(emailRegex);
-        Matcher matcher = pattern.matcher(text);
-
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-        return "Email not found";
+        return defaultValue;
     }
 
     private List<String> extractSkills(String text) {
-        // Manually defined list of skills
         List<String> skillKeywords = List.of(
                 "Java", "Python", "C++", "Spring", "Hibernate", "SQL",
                 "JavaScript", "HTML", "CSS", "Angular", "React", "Node.js",
                 "Docker", "Kubernetes", "Spring Boot");
 
-        // Use the list of skills to find matches in the resume text
         return skillKeywords.stream()
                 .filter(skill -> text.toLowerCase().contains(skill.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
-    private String extractMobileNumber(String text) {
-        String mobileRegex = "\\b(\\+?\\d{1,4}[\\s-]?\\(?\\d{1,4}\\)?[\\s-]?\\d{1,4}[\\s-]?\\d{1,9})\\b";
-        Pattern pattern = Pattern.compile(mobileRegex);
-        Matcher matcher = pattern.matcher(text);
-
-        if (matcher.find()) {
-            return matcher.group().trim();
-        }
-        return "Mobile number not found";
-    }
-
-    private String extractAddress(String text) {
-        // Example regex for address (can be more complex based on requirements)
-        String addressRegex = "\\b\\d{1,5} [A-Za-z0-9 ]+(?: Apt \\w+)?(?:, [A-Za-z ]+)?(?:, [A-Z]{2} \\d{5})?(?:, [A-Za-z ]+)?\\b";
-
-        Pattern pattern = Pattern.compile(addressRegex);
-        Matcher matcher = pattern.matcher(text);
-
-        if (matcher.find()) {
-            return matcher.group().trim();
-        }
-        return "Address not found";
-    }
-
-    private String extractDateOfBirth(String text) {
-        // Regex for different date formats (e.g., DD/MM/YYYY, MM-DD-YYYY, YYYY-MM-DD)
-        String dateOfBirthRegex = "\\b(?:\\d{1,2}[/-]\\d{1,2}[/-]\\d{2,4}|\\d{2,4}[/-]\\d{1,2}[/-]\\d{1,2}|\\d{4}[./-]\\d{2}[./-]\\d{2}|\\d{1,2} [A-Za-z]+ \\d{4})\\b";
-
-        Pattern pattern = Pattern.compile(dateOfBirthRegex);
-        Matcher matcher = pattern.matcher(text);
-
-        if (matcher.find()) {
-            return matcher.group().trim();
-        }
-        return "Date of Birth not found";
-    }
-
-    private String extractMaritalStatus(String text) {
-        String maritalStatusRegex = "\\b(Single|Married|Divorced|Widowed|Separated)\\b";
-        Pattern pattern = Pattern.compile(maritalStatusRegex, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(text);
-
-        if (matcher.find()) {
-            return matcher.group().trim();
-        }
-        return "Marital status not found";
-    }
-
     private List<String> extractLanguages(String text) {
-        String languageKnownRegex = "\\b(English|Spanish|French|German|Chinese|Japanese|Russian|Hindi|Arabic|Portuguese|Italian|Korean|Dutch|Turkish|Swedish|Norwegian|Danish|Finnish|Polish|Czech|Hungarian|Greek|Hebrew|Thai|Vietnamese)\\b";
-        Pattern pattern = Pattern.compile(languageKnownRegex, Pattern.CASE_INSENSITIVE);
+        return extractMultipleData(text, LANGUAGES_REGEX, "Languages not found");
+    }
+
+    private List<String> extractMultipleData(String text, String regex, String defaultValue) {
+        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(text);
 
-        List<String> languages = new ArrayList<>();
+        List<String> data = new ArrayList<>();
         while (matcher.find()) {
-            languages.add(matcher.group().trim());
+            data.add(matcher.group().trim());
         }
-        return languages.isEmpty() ? List.of("Languages not found") : languages;
+        return data.isEmpty() ? List.of(defaultValue) : data;
     }
-
-    private String extractNationality(String text) {
-        String nationalityRegex = "\\b(American|British|Canadian|Australian|Indian|Chinese|Japanese|German|French|Italian|Spanish|Russian|Brazilian|Mexican|South African|Nigerian|Egyptian|Italian|Irish|Scottish|Welsh|Dutch|Swedish|Norwegian|Danish|Finnish|Polish|Czech|Hungarian|Greek|Turkish|Saudi|Iranian|Israeli)\\b";
-        Pattern pattern = Pattern.compile(nationalityRegex, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(text);
-
-        if (matcher.find()) {
-            return matcher.group().trim();
-        }
-        return "Nationality not found";
-    }
-
-    private String extractGender(String text) {
-        String genderRegex = "\\b(Male|Female|Non-binary|Other|Genderqueer|Genderfluid|Agender)\\b";
-        Pattern pattern = Pattern.compile(genderRegex, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(text);
-
-        if (matcher.find()) {
-            return matcher.group().trim();
-        }
-        return "Gender not found";
-    }
-
 }
