@@ -73,7 +73,7 @@ public class ResumeController {
     }
 
     private String extractName(String text) {
-        String nameRegex = "\\b[A-Z][a-z]+(?: [A-Z][a-z]+){1,2}\\b";
+        String nameRegex = "\\b[A-Z][a-z]+(?: [A-Z][a-z]+)*([-' ][A-Z][a-z]+)*\\b";
         Pattern pattern = Pattern.compile(nameRegex);
         Matcher matcher = pattern.matcher(text);
 
